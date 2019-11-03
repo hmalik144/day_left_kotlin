@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00aeef</color>
+    <color name="colorPrimaryDark">#0075d4</color>
+    <color name="colorAccent">#C1272D</color>
+
+    <color name="one">#0075d4</color>
+    <color name="two">#00aeef</color>
+    <color name="three">#239b02</color>
+    <color name="four">#1d7001</color>
+    <color name="five">#c1272d</color>
+
+    <color name="black_overlay">#66000000</color>
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <item
+            android:id="@+id/app_bar_filter"
+            android:icon="@drawable/ic_filter_list_black_24dp"
+            android:title="Filter"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            app:showAsAction="always"/>
+
+        <item
+            android:id="@+id/app_bar_soft"
+            android:icon="@drawable/ic_sort_black_24dp"
+            android:title="Sort"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            app:showAsAction="always"/>
+
+</menu>

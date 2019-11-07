@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$/Android-project" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Days_left--Kotlin-" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Farmr" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Firebase_function" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Udacity_Score_Keeper_App" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
   </component>
 </project>

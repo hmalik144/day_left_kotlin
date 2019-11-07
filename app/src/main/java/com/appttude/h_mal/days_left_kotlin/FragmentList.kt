@@ -23,6 +23,7 @@ import com.appttude.h_mal.days_left_kotlin.FirebaseClass.Companion.SHIFT_ID
 import com.appttude.h_mal.days_left_kotlin.FirebaseClass.Companion.USER_FIREBASE
 import com.appttude.h_mal.days_left_kotlin.FirebaseClass.Companion.auth
 import com.appttude.h_mal.days_left_kotlin.FirebaseClass.Companion.mDatabase
+import com.appttude.h_mal.days_left_kotlin.MainActivity.Companion.ref
 import com.appttude.h_mal.days_left_kotlin.Objects.AbnObject
 import com.appttude.h_mal.days_left_kotlin.Objects.ShiftObject
 import com.google.firebase.database.DatabaseReference
@@ -41,16 +42,7 @@ import kotlin.collections.ArrayList
 
 class FragmentList : androidx.fragment.app.Fragment() {
 
-
-    lateinit var reference : DatabaseReference
     lateinit var fireAdapter:FireAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        reference = mDatabase.child(USER_FIREBASE).child(auth.uid!!).child(SHIFT_FIREBASE)
-        reference.keepSynced(true)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +55,7 @@ class FragmentList : androidx.fragment.app.Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         //set custom firebase adapter on listview
-        fireAdapter = FireAdapter(activity, ShiftObject::class.java,R.layout.list_item,reference)
+        fireAdapter = FireAdapter(activity, ShiftObject::class.java,R.layout.list_item,ref)
         page_two_list.adapter = fireAdapter
 
         page_two_list.setOnItemClickListener(object : AdapterView.OnItemClickListener{
@@ -121,20 +113,20 @@ class FragmentList : androidx.fragment.app.Fragment() {
         alt_bld.setSingleChoiceItems(grpname, checkedItem) { dialog, item ->
             when (item) {
                 0 -> {
-                    val q1 = reference.orderByChild("abnObject/companyName").equalTo("GREEN CLOUD NURSERY")
+                    val q1 = ref.orderByChild("abnObject/companyName").equalTo("GREEN CLOUD NURSERY")
                     fireAdapter = FireAdapter(activity, ShiftObject::class.java, R.layout.list_item, q1)
                 }
                 1 -> fireAdapter = FireAdapter(
                     activity,
                     ShiftObject::class.java,
                     R.layout.list_item,
-                    reference.orderByChild("dateTimeAdded")
+                    ref.orderByChild("dateTimeAdded")
                 )
                 2 -> fireAdapter = FireAdapter(
                     activity,
                     ShiftObject::class.java,
                     R.layout.list_item,
-                    reference.orderByChild("shiftDate")
+                    ref.orderByChild("shiftDate")
                 )
             }
             page_two_list.adapter = fireAdapter
@@ -198,7 +190,7 @@ class FragmentList : androidx.fragment.app.Fragment() {
                     typeDialog.setSingleChoiceItems(
                         arrayOf("Hourly", "Piece Rate"), -1
                     ) { dialog, which ->
-                        val q1 = reference.orderByChild("taskObject/workType").equalTo(typeString[which])
+                        val q1 = ref.orderByChild("taskObject/workType").equalTo(typeString[which])
 
                         fireAdapter = FireAdapter(activity, ShiftObject::class.java, R.layout.list_item, q1)
                         page_two_list.adapter = fireAdapter
@@ -222,9 +214,9 @@ class FragmentList : androidx.fragment.app.Fragment() {
     fun applyFilter(arg1: String, arg2: String?) {
         val q1: Query
         if (arg2 == null) {
-            q1 = reference.orderByChild("abnObject/abn").equalTo(arg1)
+            q1 = ref.orderByChild("abnObject/abn").equalTo(arg1)
         } else {
-            q1 = reference.orderByChild("shiftDate").startAt(arg1).endAt(arg2)
+            q1 = ref.orderByChild("shiftDate").startAt(arg1).endAt(arg2)
         }
 
         fireAdapter = FireAdapter(activity, ShiftObject::class.java, R.layout.list_item, q1)

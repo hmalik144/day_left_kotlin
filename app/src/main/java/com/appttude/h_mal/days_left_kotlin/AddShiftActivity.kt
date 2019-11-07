@@ -84,37 +84,39 @@ class AddShiftActivity : AppCompatActivity() {
         intent.getStringExtra(SHIFT_ID)?.let {
             progress_bar.visibility = View.VISIBLE
 
-            mDatabase.child(USER_FIREBASE).child(auth.uid!!).child(SHIFT_FIREBASE).child(it)
-                .addListenerForSingleValueEvent(object : ValueEventListener{
-                    override fun onCancelled(p0: DatabaseError) {
-                        progress_bar.visibility = View.GONE
-                    }
+            val ref = mDatabase.child(USER_FIREBASE).child(auth.uid!!).child(SHIFT_FIREBASE).child(it)
 
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        progress_bar.visibility = View.GONE
-                        val shiftObject:ShiftObject? = dataSnapshot.getValue(ShiftObject::class.java)
+            ref.keepSynced(true)
+            ref.addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onCancelled(p0: DatabaseError) {
+                    progress_bar.visibility = View.GONE
+                }
 
-                        shiftObject?.let {shift ->
-                            abnObject = shift.abnObject
-                            taskObject = shift.taskObject
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    progress_bar.visibility = View.GONE
+                    val shiftObject:ShiftObject? = dataSnapshot.getValue(ShiftObject::class.java)
 
-                            shift.timeObject?.timeIn?.let {
-                                timeObject = shift.timeObject
-                                setTimeSummary()
-                                Toast.makeText(baseContext,"toasted",Toast.LENGTH_SHORT)
-                            }
+                    shiftObject?.let {shift ->
+                        abnObject = shift.abnObject
+                        taskObject = shift.taskObject
 
-                            if (shift.taskObject?.workType.equals(PIECE)) {
-                                units.setText(shift.unitsCount.toString())
-                            }
-
-                            date.setText(shiftObject.shiftDate)
-
-                            setTaskCard()
-                            setEmployerCard()
+                        shift.timeObject?.timeIn?.let {
+                            timeObject = shift.timeObject
+                            setTimeSummary()
+                            Toast.makeText(baseContext,"toasted",Toast.LENGTH_SHORT)
                         }
+
+                        if (shift.taskObject?.workType.equals(PIECE)) {
+                            units.setText(shift.unitsCount.toString())
+                        }
+
+                        date.setText(shiftObject.shiftDate)
+
+                        setTaskCard()
+                        setEmployerCard()
                     }
-                })
+                }
+            })
         }
     }
 
@@ -168,7 +170,8 @@ class AddShiftActivity : AppCompatActivity() {
         progress_bar.visibility = View.VISIBLE
         shiftReference.setValue(shiftobj).addOnCompleteListener{task ->
             Log.i("Firebase", "onComplete: " + task.getResult()!!)
-            if (task.isSuccessful()) {
+            if (task.isSuccessful) {
+                Toast.makeText(this, "Shift Successfully submitted", Toast.LENGTH_LONG).show()
                 finish()
             }else{
                 Toast.makeText(baseContext,"Could not submit shift", Toast.LENGTH_SHORT).show()
@@ -217,47 +220,49 @@ class AddShiftActivity : AppCompatActivity() {
         val cont: Context = this
 
         if (abnObject != null) {
-            mDatabase.child(EMPLOYER_FIREBASE).child(abnObject!!.abn!!).child(TASK_FIREBASE)
-                .addListenerForSingleValueEvent(object : ValueEventListener{
-                    override fun onCancelled(p0: DatabaseError) {
+            val ref = mDatabase.child(EMPLOYER_FIREBASE).child(abnObject!!.abn!!).child(TASK_FIREBASE)
 
-                    }
+            ref.keepSynced(true)
+            ref.addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onCancelled(p0: DatabaseError) {
 
-                    override fun onDataChange(p0: DataSnapshot) {
-                        var list = ArrayList<TaskObject>()
-                        p0.exists().let {
+                }
 
-                            for (snapshot in p0.children){
-                                list.add(snapshot.getValue(TaskObject::class.java)!!)
-                            }
+                override fun onDataChange(p0: DataSnapshot) {
+                    var list = ArrayList<TaskObject>()
+                    p0.exists().let {
+
+                        for (snapshot in p0.children){
+                            list.add(snapshot.getValue(TaskObject::class.java)!!)
                         }
-
-                        val dialogView = LayoutInflater.from(cont).inflate(R.layout.dialog_previous_abns_used, null)
-
-                        val dialogListAdapter = DialogListAdapter(cont, list)
-                        dialogView.list_item_list_dialog.setAdapter(dialogListAdapter)
-
-                        val builder = AlertDialog.Builder(cont)
-                        builder.setView(dialogView)
-
-                        val alertDialog = builder.create()
-                        alertDialog.show()
-
-                        dialogView.button_list_dialog.setOnClickListener(View.OnClickListener {
-                            val intent = Intent(cont, AddItemActivity::class.java)
-                            intent.putExtra(REQUEST, TASKREQUEST)
-                            startActivityForResult(intent, TASKREQUEST)
-                            alertDialog.dismiss()
-                        })
-
-                        dialogView.list_item_list_dialog.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
-                            taskObject = list.get(position)
-                            setTaskCard()
-                            alertDialog.dismiss()
-                        })
-                        progress_bar.setVisibility(View.GONE)
                     }
-                })
+
+                    val dialogView = LayoutInflater.from(cont).inflate(R.layout.dialog_previous_abns_used, null)
+
+                    val dialogListAdapter = DialogListAdapter(cont, list)
+                    dialogView.list_item_list_dialog.setAdapter(dialogListAdapter)
+
+                    val builder = AlertDialog.Builder(cont)
+                    builder.setView(dialogView)
+
+                    val alertDialog = builder.create()
+                    alertDialog.show()
+
+                    dialogView.button_list_dialog.setOnClickListener(View.OnClickListener {
+                        val intent = Intent(cont, AddItemActivity::class.java)
+                        intent.putExtra(REQUEST, TASKREQUEST)
+                        startActivityForResult(intent, TASKREQUEST)
+                        alertDialog.dismiss()
+                    })
+
+                    dialogView.list_item_list_dialog.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
+                        taskObject = list.get(position)
+                        setTaskCard()
+                        alertDialog.dismiss()
+                    })
+                    progress_bar.setVisibility(View.GONE)
+                }
+            })
         } else {
             val intent = Intent(this@AddShiftActivity, AddItemActivity::class.java)
             intent.putExtra(REQUEST, TASKREQUEST)

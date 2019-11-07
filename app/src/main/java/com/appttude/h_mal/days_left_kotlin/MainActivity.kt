@@ -31,6 +31,7 @@ import kotlinx.android.synthetic.main.nav_header_main.view.*
 class MainActivity : AppCompatActivity() {
     companion object{
         var shiftList = ArrayList<ShiftObject>()
+        val ref = mDatabase.child(USER_FIREBASE).child(auth.uid as String).child(SHIFT_FIREBASE)
     }
 
     lateinit var fragmentManager: FragmentManager
@@ -158,7 +159,8 @@ class MainActivity : AppCompatActivity() {
         val uid = auth.uid as String
         progBar.visibility = View.VISIBLE
 
-        mDatabase.child(USER_FIREBASE).child(uid).child(SHIFT_FIREBASE).addValueEventListener(object : ValueEventListener {
+        ref.keepSynced(true)
+        ref.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
                 progBar.visibility = View.GONE
             }
